@@ -15,3 +15,4 @@ const branchSchema = new mongoose.Schema({
 })
 
 const Branch = mongoose.model("Branch", branchSchema)
+export default Branch
