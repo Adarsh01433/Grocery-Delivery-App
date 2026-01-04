@@ -123,3 +123,30 @@ export const refreshToken = async(req, reply)=> {
          return reply.status(403).send({message : "Invalid Refresh Token"})
       }
 } 
+
+
+export const fetchUser = async(req, reply)=> {
+         try {
+             const {userId, role} = req.user;
+             let user;
+
+             if(role === "Customer"){
+                user = await Customer.findById(userId);
+             }else if(role === "DeliveryPartner"){
+                user = await DeliveryPartner.findById(userId);
+             } else {
+                return reply.status(403).send({message : "Invalid Role"});
+             }
+
+             if(!user){
+                return reply.status(404).send({message : "user not found"})
+             }
+
+             return reply.send({
+                message : "User fetched sucessfully",
+                user,
+             });
+         } catch (error) {
+            return reply.status(500).send({message : "An error occured", error})
+         }
+}
