@@ -131,3 +131,35 @@ export  const updateOrderStatus = async(req, reply)=> {
         return reply.status(500).send({message : "Failed to update order status", error});
     }
 }
+
+
+
+export const getOrders = async(req, reply)=> {
+   try {
+    // exampke GET /orders?status=confirmed&branchId=66ab1&customerId=77xy9
+    // GET /orders?status=available → req.query.status
+     const {status, customerId, deliveryPartnerId , branchId} = req.query;
+     let query = {};
+
+     if(status){
+        query.status = status;
+     }
+
+     if(customerId){
+        customerId.status = customerId;
+     }
+     if(deliveryPartnerId){
+        query.deliveryPartner = deliveryPartnerId;
+        query.branch = branchId
+     }
+
+     const orders = await Order.find(query).populate(
+        "customer branch items.item deliveryPartner"
+     );
+
+     return reply.send(orders)
+   } catch (error) {
+    return reply.status(500).send({message : "Failed to retrieve orders", error})
+    
+   }
+};
