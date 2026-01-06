@@ -163,3 +163,20 @@ export const getOrders = async(req, reply)=> {
     
    }
 };
+
+export const getOrderById = async()=> {
+    try {
+        const {orderId} = req.params;
+
+        const order = await Order.findById(orderId).populate(
+            "Customer branch items.item deliveryPartner"
+        );
+
+        if(!order){
+            return reply.status(404).send({messge : "Order not found"})
+        }
+        return reply.send(order)
+    } catch (error) {
+        return reply.status(500).send({message : "Failed to retrive order", error})
+    }
+}
