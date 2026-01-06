@@ -1,5 +1,7 @@
 
 
+// FLow -> createOrder-> confirmOrder->updateOrder->getOrders/getOrder by id
+
 // createOrder
 import Order from "../../models/order.js"
 import Branch from "../../models/branch.js"
@@ -89,5 +91,43 @@ export const confirmOrder = async(req, reply)=> {
         
     } catch (error) {
         return reply.status(500).send({message : "Failed to confirm order", error})
+    }
+}
+
+export  const updateOrderStatus = async(req, reply)=> {
+    try {
+         const {orderId} = req.params;
+         const {status, deliveryPersonLocation} = req.body;
+         const {userId} = req.user;
+
+         const deliveryPerson = await DeliveryPartner.findById(userId);
+
+         if(!deliveryPerson) {
+            return reply.status(404).send({message : "Delivery Person not found"});
+         }
+
+         const order = await Order.findById(orderId);
+         if(!order) return reply.status(404).send({message : "Order not found"})
+        
+        if(["cancelled", "delivered"].includes(order.status)){
+            return reply.status(400).send({message : "Order cannot be updated"});
+        }
+           
+        // jo delivery partner assign hua hai wohi update kr skta hai
+
+        if(order.deliveryPartner.toString() !== userId){
+            return reply.status(403).send({message : "Unauthorized"})
+        }
+
+        order.status = status,
+        order.deliveryPersonLocation = deliveryPersonLocation;
+        await order.save();
+
+        req.server.io.to(orderId).emit("liveTrackingUpdates", order);
+
+         return reply.send(order)
+
+    } catch (error) {
+        return reply.status(500).send({message : "Failed to update order status", error});
     }
 }
