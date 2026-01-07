@@ -26,7 +26,7 @@ export const createOrder = async (req, reply)=> {
                 item : item.item,
                 count : item.count,
             })),
-            branch: branch,
+            branch,
             totalPrice,
             deliveryLocation: {
                 latitude : customerData.liveLocation.latitude,

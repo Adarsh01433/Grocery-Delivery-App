@@ -9,7 +9,7 @@ export const orderRoutes = async(fastify, options)=> {
     }
    });
 
-   fastify.post("/orders", createOrder);
+   fastify.post("/order", createOrder);
    fastify.get("/order", getOrders);
    fastify.patch("/order/:orderId/status", updateOrderStatus);
    fastify.post("/order/:orderId/confirm", confirmOrder),

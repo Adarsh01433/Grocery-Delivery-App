@@ -1,4 +1,4 @@
-import {Customer, Customer, DeliveryPartner} from "../../models/user.js"
+import {Customer, DeliveryPartner} from "../../models/user.js"
 import jwt from 'jsonwebtoken'
 
  // token generate utility
