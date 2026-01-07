@@ -20,8 +20,7 @@ const SplashScreen:FC = () => {
    },[])
 
   return (
-    <View>
-      <Text>SplashScreen</Text>
+    <View style = {styles.container}>
       <Image  style = {styles.logoImage}source={Logo}/>
     </View>
   )
