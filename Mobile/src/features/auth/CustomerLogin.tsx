@@ -1,5 +1,5 @@
 import { Animated, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {GestureHandlerRootView , PanGestureHandler, State} from "react-native-gesture-handler"
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import ProductSlider from '@components/login/ProductSlider'
@@ -8,10 +8,31 @@ import { Colors } from '@utils/Constants'
 import CustomText from '@components/ui/CustomText'
 import { RFValue } from 'react-native-responsive-fontsize'
 import { resetAndNavigate } from '@utils/NavigationUtils'
+import useKeyboardOffsetHeight from '@utils/useKeyboardOffsetHeight'
 
 const CustomerLogin = () => {
- 
+
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [loading, setLoading] = useState(false)
   const [gestureSequence , setGestureSequence] = useState<string[]>([])
+  const animatedValue = useRef(new Animated.Value(0)).current
+  const keyboardOffsetHeight = useKeyboardOffsetHeight()
+
+  useEffect(()=> {
+  if(keyboardOffsetHeight === 0){
+    Animated.timing(animatedValue, {
+      toValue : 0,
+      duration : 500,
+      useNativeDriver : true
+    }).start()
+  } else {
+    Animated.timing(animatedValue, {
+      toValue : -keyboardOffsetHeight * 0.84,
+      duration : 1000,
+      useNativeDriver : true
+    }).start()
+  }
+  },[keyboardOffsetHeight])
 
   const handleGesture = ({nativeEvent}:any)=> {
    if(nativeEvent.state === State.END){
