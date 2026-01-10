@@ -4,7 +4,7 @@ import { GestureHandlerRootView, PanGestureHandler, State } from "react-native-g
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import ProductSlider from '@components/login/ProductSlider'
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Colors, lightColors } from '@utils/Constants'
+import { Colors, Fonts, lightColors } from '@utils/Constants'
 import CustomText from '@components/ui/CustomText'
 import { RFValue } from 'react-native-responsive-fontsize'
 import { resetAndNavigate } from '@utils/NavigationUtils'
@@ -72,7 +72,14 @@ const CustomerLogin = () => {
               <View style = {styles.content}>
                 <Image source={require('@assets/images/logo.jpeg')}
                 style = {styles.logo}/>
-
+                
+                <CustomText variant='h2' fontFamily={Fonts.Bold}>
+                  Grocery Delivery App
+                </CustomText>
+                <CustomText variant='h5' fontFamily={Fonts.SemiBold} style={styles.text}>
+                  Log in or Sign up
+                </CustomText>
+             
               </View>
 
             </Animated.ScrollView>
@@ -135,4 +142,9 @@ const styles = StyleSheet.create({
     borderRadius : 20,
     marginVertical : 10
   },
+  text : {
+    marginTop : 2,
+    marginBottom : 25,
+    opacity : 0.8
+  }
 })
