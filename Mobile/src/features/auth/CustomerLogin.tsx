@@ -4,12 +4,15 @@ import { GestureHandlerRootView, PanGestureHandler, State } from "react-native-g
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
 import ProductSlider from '@components/login/ProductSlider'
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Colors } from '@utils/Constants'
+import { Colors, lightColors } from '@utils/Constants'
 import CustomText from '@components/ui/CustomText'
 import { RFValue } from 'react-native-responsive-fontsize'
 import { resetAndNavigate } from '@utils/NavigationUtils'
 import useKeyboardOffsetHeight from '@utils/useKeyboardOffsetHeight'
 import LinearGradient from 'react-native-linear-gradient'
+
+
+const bottomColors = [...lightColors].reverse()
 
 const CustomerLogin = () => {
 
@@ -65,7 +68,7 @@ const CustomerLogin = () => {
               keyboardDismissMode="on-drag"
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={styles.subContainer}>
-              <LinearGradient colors={bot} />
+              <LinearGradient  colors={bottomColors} style = {styles.gradient} />
             </Animated.ScrollView>
           </PanGestureHandler>
 
@@ -107,5 +110,9 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#f8f9fc",
     width: "100%"
+  },
+  gradient : {
+    paddingTop : 60,
+    width : "100%"
   }
 })
