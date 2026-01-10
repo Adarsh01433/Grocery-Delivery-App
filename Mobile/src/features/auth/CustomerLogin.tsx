@@ -1,4 +1,4 @@
-import { Animated, StyleSheet, Text, View } from 'react-native'
+import { Animated, Image, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { GestureHandlerRootView, PanGestureHandler, State } from "react-native-gesture-handler"
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
@@ -70,6 +70,8 @@ const CustomerLogin = () => {
               contentContainerStyle={styles.subContainer}>
               <LinearGradient  colors={bottomColors} style = {styles.gradient} />
               <View style = {styles.content}>
+                <Image source={require('@assets/images/logo.jpeg')}
+                style = {styles.logo}/>
 
               </View>
 
@@ -126,5 +128,11 @@ const styles = StyleSheet.create({
     backgroundColor : "white",
     paddingHorizontal : 20,
     paddingBottom : 20
-  }
+  },
+  logo : {
+    height : 50,
+    width : 50,
+    borderRadius : 20,
+    marginVertical : 10
+  },
 })
