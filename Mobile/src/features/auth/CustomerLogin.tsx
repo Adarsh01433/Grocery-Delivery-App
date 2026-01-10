@@ -69,6 +69,10 @@ const CustomerLogin = () => {
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={styles.subContainer}>
               <LinearGradient  colors={bottomColors} style = {styles.gradient} />
+              <View style = {styles.content}>
+
+              </View>
+
             </Animated.ScrollView>
           </PanGestureHandler>
 
@@ -114,5 +118,13 @@ const styles = StyleSheet.create({
   gradient : {
     paddingTop : 60,
     width : "100%"
+  },
+  content : {
+    justifyContent : "center",
+    alignItems : "center",
+    width : '100%',
+    backgroundColor : "white",
+    paddingHorizontal : 20,
+    paddingBottom : 20
   }
 })
