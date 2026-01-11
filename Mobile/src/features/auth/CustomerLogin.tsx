@@ -10,6 +10,8 @@ import { RFValue } from 'react-native-responsive-fontsize'
 import { resetAndNavigate } from '@utils/NavigationUtils'
 import useKeyboardOffsetHeight from '@utils/useKeyboardOffsetHeight'
 import LinearGradient from 'react-native-linear-gradient'
+import CustomInput from '@components/ui/CustomInput'
+import CustomButton from '@components/ui/CustomButton'
 
 
 const bottomColors = [...lightColors].reverse()
@@ -57,6 +59,10 @@ const CustomerLogin = () => {
     }
   }
 
+
+  const handleAuth = async()=> {
+
+  }
   return (
     <GestureHandlerRootView>
       <View style={styles.container}>
@@ -65,6 +71,7 @@ const CustomerLogin = () => {
 
           <PanGestureHandler onHandlerStateChange={handleGesture}>
             <Animated.ScrollView bounces={false}
+            style = {{transform : [{translateY : animatedValue}]}}
               keyboardDismissMode="on-drag"
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={styles.subContainer}>
@@ -79,6 +86,27 @@ const CustomerLogin = () => {
                 <CustomText variant='h5' fontFamily={Fonts.SemiBold} style={styles.text}>
                   Log in or Sign up
                 </CustomText>
+
+                <CustomInput 
+                onChangeText={(text)=> setPhoneNumber(text.slice(0,10))}
+                onClear={()=>setPhoneNumber("")}
+                value={phoneNumber}
+                placeholder='Enter Phone number'
+                inputMode='numeric'
+                left = {
+                  <CustomText variant='h6'
+                  fontFamily={Fonts.SemiBold}
+                   style={styles.phoneText}>
+                    +91
+                  </CustomText>
+                }
+                />
+                <CustomButton 
+                disabled = {phoneNumber?.length != 10}
+                onPress={()=>handleAuth()}
+                loading = {loading}
+                title='Continue'
+                />
              
               </View>
 
@@ -87,13 +115,12 @@ const CustomerLogin = () => {
 
         </CustomSafeAreaView>
 
-        <View style={styles.footer}>
+        {/* <View style={styles.footer}>
           <SafeAreaView />
-          <CustomText fontSize={RFValue(8)} >
+          <CustomText fontSize={RFValue(8)}  style={{textAlign : "center",}} >
             By Continuing, you agree to our terms of services & Privacy Policy
           </CustomText>
-
-        </View>
+        </View> */}
       </View>
     </GestureHandlerRootView>
   )
@@ -109,9 +136,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "center",
-    marginBottom: 20
+    marginBottom: 40
   },
-  footer: {
+   footer: {
     borderTopWidth: 0.8,
     borderColor: Colors.border,
     paddingBottom: 10,
@@ -123,7 +150,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#f8f9fc",
     width: "100%"
-  },
+   },
   gradient : {
     paddingTop : 60,
     width : "100%"
@@ -134,7 +161,7 @@ const styles = StyleSheet.create({
     width : '100%',
     backgroundColor : "white",
     paddingHorizontal : 20,
-    paddingBottom : 20
+    paddingBottom : 80
   },
   logo : {
     height : 50,
@@ -144,7 +171,10 @@ const styles = StyleSheet.create({
   },
   text : {
     marginTop : 2,
-    marginBottom : 25,
+    marginBottom : 10,
     opacity : 0.8
+  },
+  phoneText : {
+    marginLeft : 10
   }
 })
