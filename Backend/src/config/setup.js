@@ -13,7 +13,7 @@ export const admin = new  AdminJS({
             resource: Models.Customer,
             options : {
                 listProperties : ["phone", "role", "isActivated"],
-                filterProperties : ["phons", "role"]
+                filterProperties : ["phone", "role"]
             },
             
         },
