@@ -114,7 +114,7 @@ const CustomerLogin = () => {
           </PanGestureHandler>
 
         </CustomSafeAreaView>
-
+      {/* fix this later */}
         {/* <View style={styles.footer}>
           <SafeAreaView />
           <CustomText fontSize={RFValue(8)}  style={{textAlign : "center",}} >
