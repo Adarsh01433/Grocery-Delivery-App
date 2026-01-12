@@ -1,74 +1,85 @@
-import AdminJS, { resourcesReducer } from "adminjs"
-import AdminJSFastify from "@adminjs/fastify"
-import * as AdminJSMongoose from "@adminjs/mongoose";
-import * as Models from "../models/index.js";
-import {authenticate, COOKIE_PASSWORD, sessionStore} from "./config.js";
-import {dark, light, noSidebar} from "@adminjs/themes";
+import AdminJS from 'adminjs'
+import AdminJSExpress from '@adminjs/express'
+import * as AdminJSMongoose from '@adminjs/mongoose'
+import express from 'express'
+import session from 'express-session'
+import MongoStore from 'connect-mongodb-session'
 
-AdminJS.registerAdapter(AdminJSMongoose);
+import * as Models from '../models/index.js'
+import { authenticate, COOKIE_PASSWORD } from './config.js'
 
-export const admin = new  AdminJS({
-    resources:[
-        {
-            resource: Models.Customer,
-            options : {
-                listProperties : ["phone", "role", "isActivated"],
-                filterProperties : ["phone", "role"]
-            },
-            
-        },
+AdminJS.registerAdapter(AdminJSMongoose)
 
+const MongoDBStore = MongoStore(session)
 
-        {
-            resource: Models.DeliveryPartner,
-            options : {
-                listProperties : ["phone", "role", "isActivated"],
-                filterProperties : ["phone", "role"]
-            },
-            
-        },
-
-        {
-            resource: Models.Admin,
-            options : {
-                listProperties : ["phone", "role", "isActivated"],
-                filterProperties : ["phone", "role"]
-            },
-            
-        },
-
-         {resource : Models.Branch},
-         {resource : Models.Product},
-         {resource : Models.Category},
-         {resource : Models.Order},
-         {resource : Models.Counter}
-    ],
-    branding: {
-        companyName : "Grocery Delivery App",
-        withMadeWithLove : false
+export const admin = new AdminJS({
+  resources: [
+    {
+      resource: Models.Customer,
+      options: {
+        listProperties: ['phone', 'role', 'isActivated'],
+        filterProperties: ['phone', 'role'],
+      },
     },
-    defaultTheme : dark.id,
-    availableThemes : [dark,light, noSidebar],
-    rootPath : "/admin"
+    {
+      resource: Models.DeliveryPartner,
+      options: {
+        listProperties: ['phone', 'role', 'isActivated'],
+        filterProperties: ['phone', 'role'],
+      },
+    },
+    {
+      resource: Models.Admin,
+      options: {
+        listProperties: ['phone', 'role', 'isActivated'],
+        filterProperties: ['phone', 'role'],
+      },
+    },
+    { resource: Models.Branch },
+    { resource: Models.Product },
+    { resource: Models.Category },
+    { resource: Models.Order },
+    { resource: Models.Counter },
+  ],
+
+  branding: {
+    companyName: 'Grocery Delivery App',
+    withMadeWithLove: false,
+  },
+
+  rootPath: '/admin',
 })
 
-export const buildAdminRouter = async(app)=> {
-    await AdminJSFastify.buildAuthenticatedRouter(
-        admin,
-        {
-            authenticate,
-            cookiePassword:COOKIE_PASSWORD,
-            cookieName : "adminjs"
-        },
-        app, 
-        {
-            store : sessionStore,
-            saveUninitialized : true,
-            secret : COOKIE_PASSWORD,
-            cookie : {
-                httpOnly : process.env.NODE_ENV === "production",
-                secure : process.env.NODE_ENV === "production",
-            }
-        }
-    )
+export const buildAdminRouter = async () => {
+  const app = express()
+
+  const store = new MongoDBStore({
+    uri: process.env.MONGO_URI,
+    collection: 'adminSessions',
+  })
+
+  app.use(
+    session({
+      secret: COOKIE_PASSWORD,
+      resave: false,
+      saveUninitialized: false,
+      store,
+      cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+      },
+    })
+  )
+
+  const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
+    admin,
+    {
+      authenticate,
+      cookiePassword: COOKIE_PASSWORD,
+    }
+  )
+
+  app.use(admin.options.rootPath, adminRouter)
+
+  return app
 }
