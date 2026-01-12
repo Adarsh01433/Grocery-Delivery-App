@@ -23,7 +23,7 @@ export const admin = new  AdminJS({
             resource: Models.DeliveryPartner,
             options : {
                 listProperties : ["phone", "role", "isActivated"],
-                filterProperties : ["phons", "role"]
+                filterProperties : ["phone", "role"]
             },
             
         },
@@ -32,7 +32,7 @@ export const admin = new  AdminJS({
             resource: Models.Admin,
             options : {
                 listProperties : ["phone", "role", "isActivated"],
-                filterProperties : ["phons", "role"]
+                filterProperties : ["phone", "role"]
             },
             
         },
@@ -48,7 +48,7 @@ export const admin = new  AdminJS({
         withMadeWithLove : false
     },
     defaultTheme : dark.id,
-    availableThemes : [dark.light, noSidebar],
+    availableThemes : [dark,light, noSidebar],
     rootPath : "/admin"
 })
 
