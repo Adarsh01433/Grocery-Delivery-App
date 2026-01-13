@@ -61,7 +61,7 @@ const CustomerLogin = () => {
 
 
   const handleAuth = async()=> {
-
+        CustomerLogin
   }
   return (
     <GestureHandlerRootView>
