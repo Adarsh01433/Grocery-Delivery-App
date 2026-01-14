@@ -1,4 +1,4 @@
-import { Animated, Image, StyleSheet, Text, View } from 'react-native'
+import { Alert, Animated, Image, Keyboard, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { GestureHandlerRootView, PanGestureHandler, State } from "react-native-gesture-handler"
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
@@ -12,6 +12,7 @@ import useKeyboardOffsetHeight from '@utils/useKeyboardOffsetHeight'
 import LinearGradient from 'react-native-linear-gradient'
 import CustomInput from '@components/ui/CustomInput'
 import CustomButton from '@components/ui/CustomButton'
+import { customerLogin } from 'services/authService'
 
 
 const bottomColors = [...lightColors].reverse()
@@ -60,8 +61,17 @@ const CustomerLogin = () => {
   }
 
 
-  const handleAuth = async()=> {
-        CustomerLogin
+  const handleAuth = async () => {
+     Keyboard.dismiss()
+     setLoading(true)
+     try {
+         await customerLogin(phoneNumber)
+         resetAndNavigate("ProductDashboard")
+     } catch (error) {
+       Alert.alert("Login Failed")
+     } finally {
+      setLoading(false)
+     }
   }
   return (
     <GestureHandlerRootView>
@@ -71,15 +81,15 @@ const CustomerLogin = () => {
 
           <PanGestureHandler onHandlerStateChange={handleGesture}>
             <Animated.ScrollView bounces={false}
-            style = {{transform : [{translateY : animatedValue}]}}
+              style={{ transform: [{ translateY: animatedValue }] }}
               keyboardDismissMode="on-drag"
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={styles.subContainer}>
-              <LinearGradient  colors={bottomColors} style = {styles.gradient} />
-              <View style = {styles.content}>
+              <LinearGradient colors={bottomColors} style={styles.gradient} />
+              <View style={styles.content}>
                 <Image source={require('@assets/images/logo.jpeg')}
-                style = {styles.logo}/>
-                
+                  style={styles.logo} />
+
                 <CustomText variant='h2' fontFamily={Fonts.Bold}>
                   Grocery Delivery App
                 </CustomText>
@@ -87,34 +97,34 @@ const CustomerLogin = () => {
                   Log in or Sign up
                 </CustomText>
 
-                <CustomInput 
-                onChangeText={(text)=> setPhoneNumber(text.slice(0,10))}
-                onClear={()=>setPhoneNumber("")}
-                value={phoneNumber}
-                placeholder='Enter Phone number'
-                inputMode='numeric'
-                left = {
-                  <CustomText variant='h6'
-                  fontFamily={Fonts.SemiBold}
-                   style={styles.phoneText}>
-                    +91
-                  </CustomText>
-                }
+                <CustomInput
+                  onChangeText={(text) => setPhoneNumber(text.slice(0, 10))}
+                  onClear={() => setPhoneNumber("")}
+                  value={phoneNumber}
+                  placeholder='Enter Phone number'
+                  inputMode='numeric'
+                  left={
+                    <CustomText variant='h6'
+                      fontFamily={Fonts.SemiBold}
+                      style={styles.phoneText}>
+                      +91
+                    </CustomText>
+                  }
                 />
-                <CustomButton 
-                disabled = {phoneNumber?.length != 10}
-                onPress={()=>handleAuth()}
-                loading = {loading}
-                title='Continue'
+                <CustomButton
+                  disabled={phoneNumber?.length != 10}
+                  onPress={() => handleAuth()}
+                  loading={loading}
+                  title='Continue'
                 />
-             
+
               </View>
 
             </Animated.ScrollView>
           </PanGestureHandler>
 
         </CustomSafeAreaView>
-      {/* fix this later */}
+        {/* fix this later */}
         {/* <View style={styles.footer}>
           <SafeAreaView />
           <CustomText fontSize={RFValue(8)}  style={{textAlign : "center",}} >
@@ -138,7 +148,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 40
   },
-   footer: {
+  footer: {
     borderTopWidth: 0.8,
     borderColor: Colors.border,
     paddingBottom: 10,
@@ -150,31 +160,31 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#f8f9fc",
     width: "100%"
-   },
-  gradient : {
-    paddingTop : 60,
-    width : "100%"
   },
-  content : {
-    justifyContent : "center",
-    alignItems : "center",
-    width : '100%',
-    backgroundColor : "white",
-    paddingHorizontal : 20,
-    paddingBottom : 80
+  gradient: {
+    paddingTop: 60,
+    width: "100%"
   },
-  logo : {
-    height : 50,
-    width : 50,
-    borderRadius : 20,
-    marginVertical : 10
+  content: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: '100%',
+    backgroundColor: "white",
+    paddingHorizontal: 20,
+    paddingBottom: 80
   },
-  text : {
-    marginTop : 2,
-    marginBottom : 10,
-    opacity : 0.8
+  logo: {
+    height: 50,
+    width: 50,
+    borderRadius: 20,
+    marginVertical: 10
   },
-  phoneText : {
-    marginLeft : 10
+  text: {
+    marginTop: 2,
+    marginBottom: 10,
+    opacity: 0.8
+  },
+  phoneText: {
+    marginLeft: 10
   }
 })

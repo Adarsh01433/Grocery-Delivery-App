@@ -1,19 +1,20 @@
 {
   "extends": "@react-native/typescript-config",
   "compilerOptions": {
-    "typeRoots": ["node_modules/@types","src/types"],
+    "verbatimModuleSyntax": false,
+    "typeRoots": ["node_modules/@types", "src/types"],
     "types": ["jest"],
-     "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "6.0",
     "baseUrl": "./src/",
     "paths": {
-      "@assets/*":["assets/*"],
-      "@features/*":["features/*"],
-      "@service/*":["service/*"],
-      "@styles/*":["styles/*"],
-      "@navigation/*":["navigation/*"],
-      "@components/*":["components/*"],
-      "@state/*":["state/*"],
-      "@utils/*":["utils/*"]
+      "@assets/*": ["assets/*"],
+      "@features/*": ["features/*"],
+      "@service/*": ["service/*"],
+      "@styles/*": ["styles/*"],
+      "@navigation/*": ["navigation/*"],
+      "@components/*": ["components/*"],
+      "@state/*": ["state/*"],
+      "@utils/*": ["utils/*"]
     }
   }
 }
