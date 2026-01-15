@@ -2,24 +2,35 @@ import 'dotenv/config'
 import fastify from 'fastify'
 import fastifySocketIO from 'fastify-socket.io'
 import fastifyFormbody from 'fastify-formbody'
+import cors from 'fastify-cors'
+
 
 import { connectDB } from './src/config/connect.js'
-import { PORT } from './src/config/config.js'
 import { registerRoutes } from './src/routes/index.js'
 import { buildAdminRouter, admin } from './src/config/setup.js'
 
+// 🔹 PORTS (IMPORTANT)
+const API_PORT = 3001      // 🔥 Mobile / Customer API
+const ADMIN_PORT = 3000   // 🔥 Admin Panel (AdminJS)
+
+// 🔹 FASTIFY APP (API SERVER)
 const app = fastify({ logger: true })
 
 const start = async () => {
   try {
-    // 1️⃣ DB
+    // 1️⃣ DATABASE
     await connectDB(process.env.MONGO_URI)
-    console.log('DB Connected')
+    console.log('✅ DB Connected')
 
-    // 2️⃣ Body parser (Fastify v3)
+    // 2️⃣ CORS
+    await app.register(cors, {
+      origin: true,
+    })
+
+    // 3️⃣ BODY PARSER
     app.register(fastifyFormbody)
 
-    // 3️⃣ Socket.IO
+    // 4️⃣ SOCKET.IO
     app.register(fastifySocketIO, {
       cors: { origin: '*' },
       pingInterval: 10000,
@@ -27,36 +38,40 @@ const start = async () => {
       transports: ['websocket'],
     })
 
-    // 4️⃣ API routes
+    // 5️⃣ REGISTER ALL API ROUTES (/api/*)
     await registerRoutes(app)
 
-    // 5️⃣ Start FASTIFY server (API)
-    await app.listen(PORT, '0.0.0.0')
-    console.log(`🚀 API running at http://localhost:${PORT}`)
-
-    // 6️⃣ Socket events
+    // 🔥 DEBUG: PRINT ROUTES (OPTIONAL BUT USEFUL)
     app.ready(() => {
-      app.io.on('connection', (socket) => {
-        console.log('User connected')
+      console.log(app.printRoutes())
+    })
 
-        socket.on('joinRoom', (orderId) => {
-          socket.join(orderId)
-          console.log(`User joined room ${orderId}`)
-        })
+    // 6️⃣ START FASTIFY API SERVER
+    await app.listen(API_PORT, '0.0.0.0')
+    console.log(`🚀 API running at http://localhost:${API_PORT}`)
 
-        socket.on('disconnect', () => {
-          console.log('User disconnected')
-        })
+    // 7️⃣ SOCKET EVENTS
+    app.io.on('connection', (socket) => {
+      console.log('🔌 Socket connected')
+
+      socket.on('joinRoom', (orderId) => {
+        socket.join(orderId)
+        console.log(`👥 Joined room ${orderId}`)
+      })
+
+      socket.on('disconnect', () => {
+        console.log('❌ Socket disconnected')
       })
     })
 
-    // 7️⃣ START ADMINJS (EXPRESS – SEPARATE SERVER)
+    // 8️⃣ START ADMINJS (SEPARATE EXPRESS SERVER)
     const adminApp = await buildAdminRouter()
-    adminApp.listen(3001, () => {
+    adminApp.listen(ADMIN_PORT, () => {
       console.log(
-        `🛠️ AdminJS running at http://localhost:3001${admin.options.rootPath}`
+        `🛠️ AdminJS running at http://localhost:${ADMIN_PORT}${admin.options.rootPath}`
       )
     })
+
   } catch (err) {
     console.error('❌ Server start failed:', err)
     process.exit(1)

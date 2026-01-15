@@ -1,4 +1,4 @@
-import { Alert, Animated, Image, Keyboard, StyleSheet, Text, View } from 'react-native'
+import { Alert, Animated, Image, Keyboard, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { GestureHandlerRootView, PanGestureHandler, State } from "react-native-gesture-handler"
 import CustomSafeAreaView from '@components/global/CustomSafeAreaView'
@@ -12,7 +12,10 @@ import useKeyboardOffsetHeight from '@utils/useKeyboardOffsetHeight'
 import LinearGradient from 'react-native-linear-gradient'
 import CustomInput from '@components/ui/CustomInput'
 import CustomButton from '@components/ui/CustomButton'
-import { customerLogin } from 'services/authService'
+import { customerLogin } from '../../services/authService'
+import  Icon  from 'react-native-vector-icons/MaterialCommunityIcons'
+
+// import { customerLogin } from 'services/authService'
 
 
 const bottomColors = [...lightColors].reverse()
@@ -62,10 +65,14 @@ const CustomerLogin = () => {
 
 
   const handleAuth = async () => {
+    console.log("🔥 HANDLE AUTH CALLED");
+    console.log("TYPE OF customerLogin:", typeof customerLogin);
+
      Keyboard.dismiss()
      setLoading(true)
      try {
          await customerLogin(phoneNumber)
+        
          resetAndNavigate("ProductDashboard")
      } catch (error) {
        Alert.alert("Login Failed")
@@ -132,6 +139,10 @@ const CustomerLogin = () => {
           </CustomText>
         </View> */}
       </View>
+
+      <TouchableOpacity style = {styles.absolutSwitch} onPress={()=> resetAndNavigate("DeliveryLogin")}>
+         <Icon   name='bike-fast' color="#000" size={RFValue(22)} />
+      </TouchableOpacity>
     </GestureHandlerRootView>
   )
 }
@@ -141,6 +152,25 @@ export default CustomerLogin
 const styles = StyleSheet.create({
   container: {
     flex: 1
+  },
+
+  absolutSwitch : {
+  position : "absolute",
+  top : Platform.OS === 'ios' ? 40:20,
+  backgroundColor : "#fff",
+  shadowColor : "#000",
+  shadowOffset : {width : 1, height : 1},
+  shadowOpacity : 0.5,
+  shadowRadius : 12,
+  elevation : 10,
+  padding : 10,
+  height : 60,
+  justifyContent : "center",
+  alignItems : "center",
+borderRadius : 20,
+zIndex : 99,
+right : 10
+
   },
   subContainer: {
     flex: 1,

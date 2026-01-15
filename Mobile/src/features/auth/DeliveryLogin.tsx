@@ -1,14 +1,78 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { FC, useState } from 'react';
+import { deliveryLogin } from 'services/authService';
+import { resetAndNavigate } from '@utils/NavigationUtils';
+import CustomSafeAreaView from '@components/global/CustomSafeAreaView';
+import LottieView from 'lottie-react-native';
+import { screenHeight } from '@utils/Scaling';
+import CustomText from '@components/ui/CustomText';
+import { Fonts } from '@utils/Constants';
 
-const DeliveryLogin = () => {
+const DeliveryLogin: FC = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    setLoading(true);
+    try {
+      await deliveryLogin(email, password);
+      resetAndNavigate('DeliveryDashboard');
+    } catch (error) {
+      Alert.alert('Login Failed');
+    }
+  };
+  
   return (
-    <View>
-      <Text>DeliveryLogin</Text>
-    </View>
-  )
-}
+    <CustomSafeAreaView>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+      >
+        <View style={styles.container}>
+          <View style={styles.lottieContainer}>
+            <LottieView
+              autoPlay
+              loop
+              style={styles.lottie}
+              source={require('@assets/animations/delivery_man.json')}
+              hardwareAccelerationAndroid 
+            />
+          </View>
+          <CustomText style={styles.text} variant='h3' fontFamily={Fonts.Bold}>
+            Delivery Partner Portal 
+          </CustomText>
 
-export default DeliveryLogin
+          <CustomText>
+            Faster than Flash 
+          </CustomText>
+        </View>
+      </ScrollView>
+    </CustomSafeAreaView>
+  );
+};
 
-const styles = StyleSheet.create({})
+export default DeliveryLogin;
+
+const styles = StyleSheet.create({
+  container : {
+    flex : 1,
+    padding : 20,
+    alignItems : "center"
+  },
+  lottie : {
+    width : "100%",
+    height : "100%",
+  },
+  lottieContainer : {
+    height : screenHeight * 0.12,
+    width : "100%"
+  },
+
+  text : {
+    marginTop : 3,
+    marginBottom : 25,
+    opacity : 0.8
+  }
+  
+});

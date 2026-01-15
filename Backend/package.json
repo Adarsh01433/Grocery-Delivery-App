@@ -18,6 +18,7 @@
     "express": "^5.2.1",
     "express-session": "^1.18.2",
     "fastify": "3.29.5",
+    "fastify-cors": "^6.0.3",
     "fastify-formbody": "^5.2.0",
     "fastify-socket.io": "4.0.0",
     "jsonwebtoken": "9.0.2",
