@@ -3,10 +3,11 @@ import React, { FC, useEffect } from 'react'
 import { Colors } from '@utils/Constants'
 import Logo from "@assets/images/logo.jpeg"
 import { screenHeight, screenWidth } from '@utils/Scaling'
-import { navigate } from '@utils/NavigationUtils'
+import { navigate, resetAndNavigate } from '@utils/NavigationUtils'
 import GeoLocation from "@react-native-community/geolocation"
 import { useAuthStore } from '@state/authStore'
 import { tokenStorage } from '@state/storage'
+import {jwtDecode} from "jwt-decode"
 
 
 
@@ -28,6 +29,19 @@ const SplashScreen:FC = () => {
   const tokenCheck = async()=> {
     const accessToken = tokenStorage.getString('accessToken') as string
     const refreshToken = tokenStorage.getString('refreshToken') as string
+
+     if(accessToken){
+       
+      const decodedAccessToken = jwtDecode<DecodedToken>(accessToken)
+      const decodedRefreshToken = jwtDecode<DecodedToken>(refreshToken)
+
+      const currentTime = Date.now() / 1000;
+
+      
+
+     }
+     resetAndNavigate("CustomerLogin")
+     return false 
   }
 
    useEffect(()=> {
