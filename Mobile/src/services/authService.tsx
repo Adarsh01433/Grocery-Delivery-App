@@ -2,6 +2,7 @@ import axios from "axios"
 import { BASE_URL } from "./config"
 import {tokenStorage} from '@state/storage'
 import { useAuthStore } from "@state/authStore"
+import { resetAndNavigate } from "@utils/NavigationUtils"
 
 
 // 🔥 ADD THIS LINE EXACTLY HERE
@@ -58,13 +59,39 @@ export const deliveryLogin = async(email:string , password:string)=> {
 
 export const refresh_token = async()=> {
     try {
-        const refreshToken = tokenStorage.getString('refreshToken')
+         // 1️⃣ Local storage se refresh token uthao
+        const refreshToken = tokenStorage.getString('refreshToken') 
+
+        
+    // 3️⃣ Backend ko refresh request bhejo
         const response = await axios.post(`${BASE_URL}/refresh-token`, {
             refreshToken
         })
-            const new_access_token = 
+
+         // 4️⃣ Server se naye tokens lo
+            const new_access_token = response.data.accessToken
+            const  new_refresh_token = response.data.refreshToken
+
+            // 5️⃣ Tokens ko securely overwrite karo
+            tokenStorage.set('accessToken', new_access_token)
+            tokenStorage.set('refreshToken', new_refresh_token);
+             return new_access_token
 
     } catch (error) {
+        console.log("REFRESH TOKEN ERROR", error)
+        tokenStorage.clearAll()
+        resetAndNavigate("CustomerLogin")
+        
         
     }
+}
+
+export const refetchUser = async(setUser : any)=> {
+       try {
+        const response = await appAxios.get('/user')
+        setUser(response.data.user)
+       } catch (error) {
+        console.log("Login error", error);
+        
+       }
 }
