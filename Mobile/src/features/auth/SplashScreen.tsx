@@ -4,6 +4,20 @@ import { Colors } from '@utils/Constants'
 import Logo from "@assets/images/logo.jpeg"
 import { screenHeight, screenWidth } from '@utils/Scaling'
 import { navigate } from '@utils/NavigationUtils'
+import GeoLocation from "@react-native-community/geolocation"
+
+
+
+GeoLocation.setRNConfiguration({
+  skipPermissionRequests: false,
+  authorizationLevel : 'always',
+  enableBackgroundLocationUpdates : true,
+  locationProvider : 'auto'
+})
+
+interface DecodedToken {
+  exp : number
+}
 
 
 const SplashScreen:FC = () => {
