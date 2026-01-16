@@ -7,6 +7,9 @@ import LottieView from 'lottie-react-native';
 import { screenHeight } from '@utils/Scaling';
 import CustomText from '@components/ui/CustomText';
 import { Fonts } from '@utils/Constants';
+import CustomInput from '@components/ui/CustomInput';
+import  Icon  from 'react-native-vector-icons/Ionicons';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 const DeliveryLogin: FC = () => {
   const [email, setEmail] = useState('');
@@ -46,6 +49,28 @@ const DeliveryLogin: FC = () => {
           <CustomText>
             Faster than Flash 
           </CustomText>
+
+          <CustomInput onChangeText={setEmail}
+          value={email}
+          left = {<Icon 
+          name='mail'
+          color='#F8890E'
+          style = {{marginLeft : 10}}
+          size={RFValue(18)}/>}
+          placeholder='Email'
+          inputMode='email'
+          right ={false}/>
+
+          <CustomInput  onChangeText={setPassword}
+          value= {password}
+          left = {
+            <Icon name='key-sharp'
+            color= "#f8890E"
+            style = {{marginLeft : 10}}
+            size={RFValue(18)}/>}
+            placeholder='Password'
+            secureTextEntry 
+            right = {true}/>
         </View>
       </ScrollView>
     </CustomSafeAreaView>

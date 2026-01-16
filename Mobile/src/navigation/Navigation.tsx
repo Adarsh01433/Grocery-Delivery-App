@@ -5,6 +5,8 @@ import { navigationRef } from '@utils/NavigationUtils';
 import SplashScreen from '@features/auth/SplashScreen';
 import DeliveryLogin from '@features/auth/DeliveryLogin';
 import CustomerLogin from '@features/auth/CustomerLogin';
+import ProductDashboard from '@features/dashboard/ProductDashboard';
+import DeliveryDashboard from '@features/delivery/DeliveryDashboard';
 
 
 const Stack = createNativeStackNavigator()
@@ -17,6 +19,9 @@ const Navigation:FC = () => {
               animation : "fade"
             }}/>
 
+            <Stack.Screen name='ProductDashBoard' component={ProductDashboard}/>
+            <Stack.Screen name='DeliveryDashboard' component={DeliveryDashboard}/>
+                
               <Stack.Screen name='DeliveryLogin' component={DeliveryLogin} options={{
                 animation : "fade"
               }}/>
