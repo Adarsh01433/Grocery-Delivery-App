@@ -5,6 +5,8 @@ import Logo from "@assets/images/logo.jpeg"
 import { screenHeight, screenWidth } from '@utils/Scaling'
 import { navigate } from '@utils/NavigationUtils'
 import GeoLocation from "@react-native-community/geolocation"
+import { useAuthStore } from '@state/authStore'
+import { tokenStorage } from '@state/storage'
 
 
 
@@ -21,6 +23,13 @@ interface DecodedToken {
 
 
 const SplashScreen:FC = () => {
+  const {user, setUser} = useAuthStore()
+
+  const tokenCheck = async()=> {
+    const accessToken = tokenStorage.getString('accessToken') as string
+    const refreshToken = tokenStorage.getString('refreshToken') as string
+  }
+
    useEffect(()=> {
     
     const navigateUser = async()=> {
