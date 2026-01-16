@@ -54,3 +54,17 @@ export const deliveryLogin = async(email:string , password:string)=> {
         
      }
 }
+
+
+export const refresh_token = async()=> {
+    try {
+        const refreshToken = tokenStorage.getString('refreshToken')
+        const response = await axios.post(`${BASE_URL}/refresh-token`, {
+            refreshToken
+        })
+            const new_access_token = 
+
+    } catch (error) {
+        
+    }
+}

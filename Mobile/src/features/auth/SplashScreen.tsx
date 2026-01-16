@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from 'react-native'
+import { Alert, Image, StyleSheet, Text, View } from 'react-native'
 import React, { FC, useEffect } from 'react'
 import { Colors } from '@utils/Constants'
 import Logo from "@assets/images/logo.jpeg"
@@ -37,7 +37,13 @@ const SplashScreen:FC = () => {
 
       const currentTime = Date.now() / 1000;
 
-      
+       if(decodedAccessToken?.exp < currentTime){
+        resetAndNavigate("CustomerLogin")
+        Alert.alert("Session expired", "please login again")
+        return false
+       }
+
+       
 
      }
      resetAndNavigate("CustomerLogin")
