@@ -3,6 +3,7 @@ import { BASE_URL } from "./config"
 import {tokenStorage} from '@state/storage'
 import { useAuthStore } from "@state/authStore"
 import { resetAndNavigate } from "@utils/NavigationUtils"
+import { appAxios } from "./apiInterceptors"
 
 
 // 🔥 ADD THIS LINE EXACTLY HERE
@@ -93,5 +94,15 @@ export const refetchUser = async(setUser : any)=> {
        } catch (error) {
         console.log("Login error", error);
          
+       }
+}
+
+export const updateUserLocation = async(data : any , setUser : any)=> {
+       try {
+        const response = await appAxios.patch('/user', data)
+        refetchUser(setUser)
+       } catch (error) {
+        console.log("updateUserLocation Error", error);
+        
        }
 }
