@@ -2,27 +2,33 @@ import { Customer, DeliveryPartner } from "../../models/user.js";
 import jwt from "jsonwebtoken";
 
 /* ======================================================
-   TOKEN GENERATOR (FIXED)
+   SAFETY: ENV CHECK (MANDATORY)
+   ====================================================== */
+if (!process.env.ACCESS_TOKEN_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
+  throw new Error("JWT secrets are missing in environment variables");
+}
+
+/* ======================================================
+   TOKEN GENERATOR
    ====================================================== */
 const generateTokens = (user) => {
   if (!user || !user._id || !user.role) {
     throw new Error("Invalid user object passed to generateTokens");
   }
 
+  const payload = {
+    userId: user._id.toString(),
+    role: user.role,
+  };
+
   const accessToken = jwt.sign(
-    {
-      userId: user._id.toString(),
-      role: user.role,
-    },
+    payload,
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "1d" }
   );
 
   const refreshToken = jwt.sign(
-    {
-      userId: user._id.toString(),
-      role: user.role,
-    },
+    payload,
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: "7d" }
   );
@@ -31,7 +37,7 @@ const generateTokens = (user) => {
 };
 
 /* ======================================================
-   CUSTOMER LOGIN (FIXED)
+   CUSTOMER LOGIN (FIXED + TOKEN ROTATION READY)
    ====================================================== */
 export const loginCustomer = async (req, reply) => {
   try {
@@ -49,13 +55,13 @@ export const loginCustomer = async (req, reply) => {
         role: "Customer",
         isActivated: true,
       });
-      await customer.save();
     }
 
-    // 🔥 FIX: pass FULL user object
-    console.log("ACCESS:", process.env.ACCESS_TOKEN_SECRET);
-console.log("REFRESH:", process.env.REFRESH_TOKEN_SECRET);
     const { accessToken, refreshToken } = generateTokens(customer);
+
+    // 🔒 STORE REFRESH TOKEN (VERY IMPORTANT)
+    customer.refreshToken = refreshToken;
+    await customer.save();
 
     return reply.send({
       message: "Login Successful",
@@ -73,7 +79,7 @@ console.log("REFRESH:", process.env.REFRESH_TOKEN_SECRET);
 };
 
 /* ======================================================
-   DELIVERY PARTNER LOGIN (FIXED LOGIC)
+   DELIVERY PARTNER LOGIN (LOGIC CLEANED)
    ====================================================== */
 export const loginDeliveryPartner = async (req, reply) => {
   try {
@@ -85,14 +91,15 @@ export const loginDeliveryPartner = async (req, reply) => {
       return reply.status(404).send({ message: "Delivery Partner not found" });
     }
 
-    // ❗ password check (plain for now)
-    const isMatch = password === deliveryPartner.password;
-
-    if (!isMatch) {
+    // ⚠️ TEMP: plain password (hash later)
+    if (password !== deliveryPartner.password) {
       return reply.status(400).send({ message: "Invalid credentials" });
     }
 
     const { accessToken, refreshToken } = generateTokens(deliveryPartner);
+
+    deliveryPartner.refreshToken = refreshToken;
+    await deliveryPartner.save();
 
     return reply.send({
       message: "Login Successful",
@@ -108,9 +115,9 @@ export const loginDeliveryPartner = async (req, reply) => {
 };
 
 /* ======================================================
-   REFRESH TOKEN (FIXED)
+   REFRESH TOKEN (SECURE + ROTATION)
    ====================================================== */
-export const refreshToken = async (req, reply) => {
+export const refreshAccessToken = async (req, reply) => {
   const { refreshToken } = req.body;
 
   if (!refreshToken) {
@@ -133,11 +140,16 @@ export const refreshToken = async (req, reply) => {
       return reply.status(403).send({ message: "Invalid role" });
     }
 
-    if (!user) {
-      return reply.status(403).send({ message: "User not found" });
+    if (!user || user.refreshToken !== refreshToken) {
+      return reply.status(403).send({
+        message: "Token reuse detected. Please login again.",
+      });
     }
 
+    // 🔁 ROTATE TOKENS
     const tokens = generateTokens(user);
+    user.refreshToken = tokens.refreshToken;
+    await user.save();
 
     return reply.send({
       message: "Token refreshed",

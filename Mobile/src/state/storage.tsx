@@ -2,14 +2,13 @@ import { MMKV } from 'react-native-mmkv';
 
 export const tokenStorage = new MMKV({
   id: 'token-storage',
-  encryptionKey: 'Some_secret_key',
 });
 
 export const storage = new MMKV({
-  id: 'my-app-storage',
-  encryptionKey: 'Some_secret_key',
+  id: 'app-storage',
 });
 
+// 👉 Zustand persist ke liye wrapper
 export const mmkvStorage = {
   setItem: (key: string, value: string) => {
     storage.set(key, value);

@@ -19,7 +19,7 @@ const Navigation:FC = () => {
               animation : "fade"
             }}/>
 
-            <Stack.Screen name='ProductDashBoard' component={ProductDashboard}/>
+            <Stack.Screen name='ProductDashboard' component={ProductDashboard}/>
             <Stack.Screen name='DeliveryDashboard' component={DeliveryDashboard}/>
                 
               <Stack.Screen name='DeliveryLogin' component={DeliveryLogin} options={{

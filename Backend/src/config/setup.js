@@ -3,14 +3,11 @@ import AdminJSExpress from '@adminjs/express'
 import * as AdminJSMongoose from '@adminjs/mongoose'
 import express from 'express'
 import session from 'express-session'
-import MongoStore from 'connect-mongodb-session'
 
 import * as Models from '../models/index.js'
 import { authenticate, COOKIE_PASSWORD } from './config.js'
 
 AdminJS.registerAdapter(AdminJSMongoose)
-
-const MongoDBStore = MongoStore(session)
 
 export const admin = new AdminJS({
   resources: [
@@ -53,17 +50,12 @@ export const admin = new AdminJS({
 export const buildAdminRouter = async () => {
   const app = express()
 
-  const store = new MongoDBStore({
-    uri: process.env.MONGO_URI,
-    collection: 'adminSessions',
-  })
-
+  // ✅ MEMORY SESSION (NO MONGODB)
   app.use(
     session({
       secret: COOKIE_PASSWORD,
       resave: false,
       saveUninitialized: false,
-      store,
       cookie: {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',

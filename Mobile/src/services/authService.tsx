@@ -1,108 +1,87 @@
-import axios from "axios"
-import { BASE_URL } from "./config"
-import {tokenStorage} from '@state/storage'
-import { useAuthStore } from "@state/authStore"
-import { resetAndNavigate } from "@utils/NavigationUtils"
-import { appAxios } from "./apiInterceptors"
+import axios from 'axios';
+import { BASE_URL } from './config';
+import { tokenStorage } from '@state/storage';
+import { useAuthStore } from '@state/authStore';
+import { resetAndNavigate } from '@utils/NavigationUtils';
+import { appAxios } from './apiInterceptors';
 
+console.log('🔥 authService FILE LOADED');
 
-// 🔥 ADD THIS LINE EXACTLY HERE
-console.log("🔥 authService FILE LOADED")
-  
+// ================= CUSTOMER LOGIN =================
+export const customerLogin = async (phone: string) => {
+  console.log('📤 customerLogin CALLED with:', phone);
 
+  try {
+    const response = await axios.post(`${BASE_URL}/customer/login`, { phone });
 
+    console.log('✅ RESPONSE DATA:', response.data);
 
-export const customerLogin = async(phone : string)=> {
-     console.log("📤 customerLogin CALLED with:", phone);
-   
-    try {
-         console.log("📤 Sending phone to backend:", phone)
-         const response =  await axios.post(`${BASE_URL}/customer/login`, {phone})
+    const { accessToken, refreshToken, customer } = response.data;
 
-          console.log("✅ RAW RESPONSE:", response)
-    console.log("✅ RESPONSE DATA:", response.data)
-         const {accessToken, refreshToken, customer} = response.data
-         tokenStorage.set("accessToken", accessToken)
-         tokenStorage.set("refreshToken", refreshToken)
-        
-          const {setUser} = useAuthStore.getState()
-          setUser(customer)
-         
-    } catch (error:any) {
-        console.log("❌ LOGIN ERROR STATUS:", error.response?.status)
-    console.log("❌ LOGIN ERROR DATA:", error.response?.data)
-    console.log("❌ LOGIN ERROR MESSAGE:", error.message)
-    throw error
+    // ✅ MMKV – correct methods
+    tokenStorage.set('accessToken', accessToken);
+    tokenStorage.set('refreshToken', refreshToken);
+
+    // ✅ Zustand
+    const { setUser } = useAuthStore.getState();
+    setUser(customer);
+
+    return true;
+  } catch (error: any) {
+    console.log('❌ LOGIN ERROR:', error.message);
+    throw error;
+  }
+};
+
+// ================= DELIVERY LOGIN =================
+export const deliveryLogin = async (email: string, password: string) => {
+  const response = await axios.post(`${BASE_URL}/delivery/login`, {
+    email,
+    password,
+  });
+
+  const { accessToken, refreshToken, deliveryPartner } = response.data;
+
+  tokenStorage.set('accessToken', accessToken);
+  tokenStorage.set('refreshToken', refreshToken);
+
+  const { setUser } = useAuthStore.getState();
+  setUser(deliveryPartner);
+};
+
+// ================= REFRESH TOKEN =================
+export const refresh_token = async () => {
+  try {
+    const refreshToken = tokenStorage.getString('refreshToken');
+
+    if (!refreshToken) {
+      throw new Error('No refresh token');
     }
-}
 
-export const deliveryLogin = async(email:string , password:string)=> {
-     console.log("📤 DeliveryLogin CALLED with:", email, password);
+    const response = await axios.post(`${BASE_URL}/refresh-token`, {
+      refreshToken,
+    });
 
-     try {
-         const response = await axios.post(`${BASE_URL}/delivery/login`,{email, password})
-         const {accessToken, refreshToken, deliveryPartner} = response.data;
-         tokenStorage.set('accesToken', accessToken)
-         tokenStorage.set('refreshToken', refreshToken);
-         const {setUser} = useAuthStore.getState();
-         setUser(deliveryPartner)
+    const newAccessToken = response.data.accessToken;
+    const newRefreshToken = response.data.refreshToken;
 
+    tokenStorage.set('accessToken', newAccessToken);
+    tokenStorage.set('refreshToken', newRefreshToken);
 
-     } catch (error: any) {
-        console.log("❌ LOGIN ERROR STATUS:", error.response?.status)
-    console.log("❌ LOGIN ERROR DATA:", error.response?.data)
-    console.log("❌ LOGIN ERROR MESSAGE:", error.message)
-    throw error
-        
-     }
-}
+    return newAccessToken;
+  } catch (error) {
+    console.log('❌ REFRESH TOKEN FAILED');
 
+    // ✅ DO NOT use clear / clearAll here
+    tokenStorage.delete('accessToken');
+    tokenStorage.delete('refreshToken');
 
-export const refresh_token = async()=> {
-    try {
-         // 1️⃣ Local storage se refresh token uthao
-        const refreshToken = tokenStorage.getString('refreshToken') 
+    resetAndNavigate('CustomerLogin');
+  }
+};
 
-        
-    // 3️⃣ Backend ko refresh request bhejo
-        const response = await axios.post(`${BASE_URL}/refresh-token`, {
-            refreshToken
-        })
-
-         // 4️⃣ Server se naye tokens lo
-            const new_access_token = response.data.accessToken
-            const  new_refresh_token = response.data.refreshToken
-
-            // 5️⃣ Tokens ko securely overwrite karo
-            tokenStorage.set('accessToken', new_access_token)
-            tokenStorage.set('refreshToken', new_refresh_token);
-             return new_access_token
-
-    } catch (error) {
-        console.log("REFRESH TOKEN ERROR", error)
-        tokenStorage.clearAll()
-        resetAndNavigate("CustomerLogin")
-        
-        
-    }
-}
-
-export const refetchUser = async(setUser : any)=> {
-       try {
-        const response = await appAxios.get('/user')
-        setUser(response.data.user)
-       } catch (error) {
-        console.log("Login error", error);
-         
-       }
-}
-
-export const updateUserLocation = async(data : any , setUser : any)=> {
-       try {
-        const response = await appAxios.patch('/user', data)
-        refetchUser(setUser)
-       } catch (error) {
-        console.log("updateUserLocation Error", error);
-        
-       }
-}
+// ================= FETCH USER =================
+export const refetchUser = async (setUser: any) => {
+  const response = await appAxios.get('/user');
+  setUser(response.data.user);
+};
