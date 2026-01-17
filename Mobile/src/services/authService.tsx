@@ -92,6 +92,6 @@ export const refetchUser = async(setUser : any)=> {
         setUser(response.data.user)
        } catch (error) {
         console.log("Login error", error);
-        
+         
        }
 }
